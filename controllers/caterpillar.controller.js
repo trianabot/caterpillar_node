@@ -261,9 +261,9 @@ exports.getSpendByDept = (req, res) => {
                 let intersection = process.filter(x => !sortedvalue.includes(x));
                 
                 for(let item of intersection) {
-                    othervalue = othervalue + parseInt(item['y']);
+                    othervalue = othervalue + parseInt(item['value']);
                 }
-                sortedvalue.push({name:'other', y: othervalue});
+                sortedvalue.push({name:'other', value: othervalue});
 
                 res.status(200).send({ data: sortedvalue, contracts: contracts.slice(0,10)});
             } else {
@@ -309,7 +309,7 @@ exports.getSpendByDept = (req, res) => {
                             value = value + parseInt(items[commited]);
                         }
                     }
-                    processvalue.push({name: item, y: value});
+                    processvalue.push({name: item, value: value});
                 }
                 return processvalue;
         }
@@ -345,4 +345,3 @@ exports.getSpendByDept = (req, res) => {
         });
     }
 
-    

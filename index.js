@@ -82,7 +82,7 @@ app.use((err, req, res, next) => {
     }
 });
 
-let port = process.env.PORT || 4000;
+let port = process.env.PORT || 4006;
 app.listen(port, () => {
     console.log(`Server started on port`+port);
 });
