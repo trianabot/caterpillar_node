@@ -39,7 +39,7 @@ exports.getCatOverviewSpend = (req, res) => {
 
         if (!err) {
             // const docss = suppliers_spend(docs, type);
-            // console.log(docss)
+            console.log(docs)
             supp = docs.reduce(function(a, d) {
                 if (a.indexOf(d.SupplierName) === -1) {
                     a.push(d.SupplierName);
@@ -47,6 +47,7 @@ exports.getCatOverviewSpend = (req, res) => {
                 return a;
             }, []);
             const process = processdata(docs, supp, type);
+            console.log(process)
             const docss = suppliers_spend(process, type);
             let intersection = process.filter(x => !docss.includes(x));
             var othercount = 0;

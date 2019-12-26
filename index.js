@@ -52,6 +52,7 @@ app.use(allowCrossDomain);
 
 const userinfo = require('./routes/user.route');
 const fileuploadInfo =  require('./routes/file.route');
+const caterpillar = require('./routes/caterpillar.route');
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
@@ -59,6 +60,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 
 app.use('/user',userinfo);
 app.use('/file',fileuploadInfo);
+app.use('/caterpillar', caterpillar);
 
 // Use the passport package in our application
 app.use(passport.initialize());
