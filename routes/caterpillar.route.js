@@ -19,6 +19,8 @@ router.post('/contractbyvalue/:type', caterpillarController.contractbyvalue);
 
 router.get('/totalVendorsContracts', caterpillarController.totalVendorsContracts);
 
+router.get('/digitalSavings', caterpillarController.digitalsavings);
+
 router.post('/postCaterpillarOverview', caterpillarController.postCatOverview);
 
 module.exports = router;

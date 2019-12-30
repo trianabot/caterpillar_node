@@ -33,13 +33,19 @@ exports.getCatOverviewSpend = (req, res) => {
     // console.log(req.params.type);
     
     var type = req.params.type;
+    var amounttype;
+    if(type == 'CommittedAmount_2019') {
+         amounttype = 'CommittedAmount_2018';
+    }else if(type == 'CurrentAmount_2019') {
+        amounttype = 'CurrentAmount_2018';
+    }
     var supp = [];
     var suppliernames = [];
     CatModel.find({}, (err, docs) => {
 
         if (!err) {
             // const docss = suppliers_spend(docs, type);
-            console.log(docs)
+            // console.log(docs)
             supp = docs.reduce(function(a, d) {
                 if (a.indexOf(d.SupplierName) === -1) {
                     a.push(d.SupplierName);
@@ -47,14 +53,16 @@ exports.getCatOverviewSpend = (req, res) => {
                 return a;
             }, []);
             const process = processdata(docs, supp, type);
-            console.log(process)
+            // console.log(process)
             const docss = suppliers_spend(process, type);
             let intersection = process.filter(x => !docss.includes(x));
             var othercount = 0;
+            var otherprevious = 0;
             for (let item of intersection) {
                 othercount = othercount + parseInt(item['y']);
+                otherprevious = otherprevious + parseInt(item['previous']);
             }
-            docss.push({"name": "Others", "y": othercount})
+            docss.push({"name": "Others", "y": othercount, previous: otherprevious})
             for(let item of docss) {
                 suppliernames.push(item['SupplierName']);;
             }
@@ -88,12 +96,14 @@ exports.getCatOverviewSpend = (req, res) => {
         var value = 0;
         for(let item of supp) {
             value = 0;
+            previous = 0;
             for(let items of docs) {
                 if(item == items['SupplierName']) {
                     value = value + parseInt(items[type]);
+                    previous = previous + parseInt(items[amounttype]);
                 }
             }
-            processvalue.push({name: item, y: value});
+            processvalue.push({name: item, y: value, previous: previous});
         }
         return processvalue;
     }
@@ -101,6 +111,12 @@ exports.getCatOverviewSpend = (req, res) => {
 
     exports.getSpendByCategory = (req, res) => {
         var type = req.params.type;
+        var amounttype;
+        if (type == 'CommittedAmount_2019') {
+            amounttype = 'CommittedAmount_2018';
+        } else if (type == 'CurrentAmount_2019') {
+            amounttype = 'CurrentAmount_2018';
+        }
         var categories = []
         CatModel.find({}, (err, docs) => {
 
@@ -124,14 +140,17 @@ exports.getCatOverviewSpend = (req, res) => {
         function processdata(docs, supp, type) {
             var processvalue = [];
             var value = 0;
+            var previous = 0;
             for(let item of supp) {
                 value = 0;
+                previous = 0;
                 for(let items of docs) {
                     if(item == items['Category']) {
                         value = value + parseInt(items[type]);
+                        previous = previous + parseInt(items[amounttype]);
                     }
                 }
-                processvalue.push({name: item, y: value});
+                processvalue.push({name: item, y: value, previous: previous});
             }
             return processvalue;
         }
@@ -139,6 +158,12 @@ exports.getCatOverviewSpend = (req, res) => {
 
 exports.getSpendByDept = (req, res) => {
     var type = req.params.type;
+    var amounttype;
+        if (type == 'CommittedAmount_2019') {
+            amounttype = 'CommittedAmount_2018';
+        } else if (type == 'CurrentAmount_2019') {
+            amounttype = 'CurrentAmount_2018';
+        }
     var deptBu = [];
     CatModel.find({}, (err, docs) => {
 
@@ -160,15 +185,18 @@ exports.getSpendByDept = (req, res) => {
     });
     function processdata(docs, supp, type) {
         var processvalue = [];
-        var value = 0;
+        var value = 0; 
+        var previous = 0;
         for(let item of supp) {
             value = 0;
+            previous = 0;
             for(let items of docs) {
                 if(item == items['DeptBU']) {
                     value = value + parseInt(items[type]);
+                    previous = previous + parseInt(items[amounttype])
                 }
             }
-            processvalue.push({name: item, y: value});
+            processvalue.push({name: item, y: value, previous: previous});
         }
         return processvalue;
     }
@@ -177,6 +205,12 @@ exports.getSpendByDept = (req, res) => {
     exports.getSupplierSavings = (req, res) => {
         // console.log(req.params.type);
         var type = req.params.type;
+        var amounttype;
+        if (type == 'CommittedAmount_2019') {
+            amounttype = 'CommittedAmount_2018';
+        } else if (type == 'CurrentAmount_2018') {
+            amounttype = 'CurrentAmount_2019';
+        }
         var suppliername = [];
         var spend2018others = 0;
         var spend2019others = 0;
@@ -214,7 +248,7 @@ exports.getSpendByDept = (req, res) => {
         function suppliers_savings(docsss, suppliername, type) {
             var commited;
             var current;
-           
+            var colorcodes = ['#7cc0f7', '#ff4b4c', '#070fb0', '#1769a3', '#1aa8a9', '#ffac4e', '#03cb44', '#ff6b1b', '#a42cee', '#ff4d6f'];
             if(type == 'CommittedAmount_2019') {
                   commited = 'CommittedAmount_2019';
                   current = 'CurrentAmount_2019'
@@ -234,9 +268,14 @@ exports.getSpendByDept = (req, res) => {
                      }
                  }
                  savings = spend2019 - spend2018;
-                 suppliersaving.push({name: item, value: savings});
+                 suppliersaving.push({name: item, value: savings, color:''});
              }
-             
+
+             for(var i=0; i<suppliersaving.length; i++) {
+                 for(var j=0; j<colorcodes.length; j++) {
+                     suppliersaving[i]['color'] = colorcodes[i];
+                 }
+             }
              return suppliersaving;
         }
     }
@@ -245,6 +284,9 @@ exports.getSpendByDept = (req, res) => {
         var type = req.params.type;
         var contracts = [];
         var othervalue = 0;
+        var otherprevious = 0;
+        var othercolor;
+        var othery;
         CatModel.find({}, (err, docs) => {
     
             if (!err) {
@@ -262,9 +304,12 @@ exports.getSpendByDept = (req, res) => {
                 
                 for(let item of intersection) {
                     othervalue = othervalue + parseInt(item['value']);
+                    otherprevious = otherprevious+ parseInt(item['previous']);
+                    othercolor = item['color'];
                 }
-                sortedvalue.push({name:'other', value: othervalue});
+                sortedvalue.push({name:'other', value: othervalue, color: othercolor, previous: otherprevious , y: othery});
 
+                console.log('process',sortedvalue);
                 res.status(200).send({ data: sortedvalue, contracts: contracts.slice(0,10)});
             } else {
                 return next(err);
@@ -294,22 +339,29 @@ exports.getSpendByDept = (req, res) => {
 
         function processdata(docs, contracts, type) {
             var commited;
-           
+            var colorcodes = ['#7cc0f7', '#ff4b4c', '#070fb0', '#1769a3', '#1aa8a9', '#ffac4e', '#03cb44', '#ff6b1b', '#a42cee', '#ff4d6f'];
             if(type == 'CommittedAmount_2019') {
-                  commited = 'CommittedAmount_2019';
+                  commited = 'CommittedAmount_2018';
             }else if(type == 'CurrentAmount_2019') {
-                commited = 'CurrentAmount_2019';
+                commited = 'CurrentAmount_2018';
             }
                 var processvalue = [];
                 var value = 0;
                 for(let item of contracts) {
                     value = 0;
+                    previous = 0;
                     for(let items of docs) {
                         if(item == items['ContractName']) {
-                            value = value + parseInt(items[commited]);
+                            value = value + parseInt(items[type]);
+                            previous = previous + parseInt(items[commited]);
                         }
                     }
-                    processvalue.push({name: item, value: value});
+                    processvalue.push({name: item, value: value, color: '', previous: previous, y: value});
+                }
+                for(var i=0; i<processvalue.length; i++) {
+                    for(var j=0; j<colorcodes.length; j++) {
+                        processvalue[i]['color'] = colorcodes[i];
+                    }
                 }
                 return processvalue;
         }
@@ -345,3 +397,23 @@ exports.getSpendByDept = (req, res) => {
         });
     }
 
+    exports.digitalsavings = (req,res) => {
+        var type = req.params.type;
+        CatModel.find({}, (err, docs) => {
+    
+            if (!err) {
+                var goal = [];
+                var actual = [];
+                for(let item of docs) {
+                    goal.push(parseInt(item['CommittedAmount_2019']));
+                    actual.push(parseInt(item['CurrentAmount_2019']));
+                }
+                goal = goal.slice(0,100);
+                actual = actual.slice(0, 100);
+                res.status(200).send({goal: goal, actual: actual});
+            }else {
+                return next(err);
+                // res.send({message:err});
+            }
+        });
+    }
