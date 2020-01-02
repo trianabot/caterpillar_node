@@ -58,13 +58,17 @@ exports.getCatOverviewSpend = (req, res) => {
             let intersection = process.filter(x => !docss.includes(x));
             var othercount = 0;
             var otherprevious = 0;
+            var othercommitedrating;
+            var othercurrentrating;
             for (let item of intersection) {
                 othercount = othercount + parseInt(item['y']);
                 otherprevious = otherprevious + parseInt(item['previous']);
+                othercommitedrating = parseInt(item['commitedrating']);
+                othercurrentrating = parseInt(item['currentrating'])
             }
-            docss.push({"name": "Others", "y": othercount, previous: otherprevious})
+            docss.push({"name": "Others", "y": othercount, previous: otherprevious, commitedrating: othercommitedrating, currentrating: othercurrentrating})
             for(let item of docss) {
-                suppliernames.push(item['SupplierName']);;
+                suppliernames.push(item['SupplierName']);
             }
             res.status(200).send({data: docss, suppliers: supp});
         } else {
@@ -94,6 +98,9 @@ exports.getCatOverviewSpend = (req, res) => {
     function processdata(docs, supp, type) {
         var processvalue = [];
         var value = 0;
+        var previous = 0;
+        var commitedrating;
+        var currentrating;
         for(let item of supp) {
             value = 0;
             previous = 0;
@@ -101,9 +108,11 @@ exports.getCatOverviewSpend = (req, res) => {
                 if(item == items['SupplierName']) {
                     value = value + parseInt(items[type]);
                     previous = previous + parseInt(items[amounttype]);
+                    commitedrating = parseInt(items['CommitedSS_rating']);
+                    currentrating = parseInt(items['CurrentSS_rating']);
                 }
             }
-            processvalue.push({name: item, y: value, previous: previous});
+            processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating});
         }
         return processvalue;
     }
@@ -141,16 +150,22 @@ exports.getCatOverviewSpend = (req, res) => {
             var processvalue = [];
             var value = 0;
             var previous = 0;
+            var commitedrating;
+            var currentrating;
             for(let item of supp) {
                 value = 0;
                 previous = 0;
+                commitedrating = 0;
+                currentrating = 0;
                 for(let items of docs) {
                     if(item == items['Category']) {
                         value = value + parseInt(items[type]);
                         previous = previous + parseInt(items[amounttype]);
+                        commitedrating = parseInt(items['CommitedSC_rating']);
+                        currentrating = parseInt(items['CurrentSC_rating']);
                     }
                 }
-                processvalue.push({name: item, y: value, previous: previous});
+                processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating});
             }
             return processvalue;
         }
@@ -187,16 +202,20 @@ exports.getSpendByDept = (req, res) => {
         var processvalue = [];
         var value = 0; 
         var previous = 0;
+        var commitedrating;
+        var currentrating;
         for(let item of supp) {
             value = 0;
             previous = 0;
             for(let items of docs) {
                 if(item == items['DeptBU']) {
                     value = value + parseInt(items[type]);
-                    previous = previous + parseInt(items[amounttype])
+                    previous = previous + parseInt(items[amounttype]);
+                    commitedrating = parseInt(items['CommitedSD_rating']);
+                    currentrating = parseInt(items['CurrentSD_rating']);
                 }
             }
-            processvalue.push({name: item, y: value, previous: previous});
+            processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating});
         }
         return processvalue;
     }
@@ -287,6 +306,8 @@ exports.getSpendByDept = (req, res) => {
         var otherprevious = 0;
         var othercolor;
         var othery;
+        var otherCOrating;
+        var otherCUrating
         CatModel.find({}, (err, docs) => {
     
             if (!err) {
@@ -306,10 +327,12 @@ exports.getSpendByDept = (req, res) => {
                     othervalue = othervalue + parseInt(item['value']);
                     otherprevious = otherprevious+ parseInt(item['previous']);
                     othercolor = item['color'];
+                    otherCOrating = item['commitedrating'];
+                    otherCUrating = item['currentrating'];
                 }
-                sortedvalue.push({name:'other', value: othervalue, color: othercolor, previous: otherprevious , y: othery});
+                sortedvalue.push({name:'other', value: othervalue, color: othercolor, previous: otherprevious , y: othery, commitedrating: otherCOrating, currentrating: otherCUrating});
 
-                console.log('process',sortedvalue);
+                // console.log('process',sortedvalue);
                 res.status(200).send({ data: sortedvalue, contracts: contracts.slice(0,10)});
             } else {
                 return next(err);
@@ -347,6 +370,9 @@ exports.getSpendByDept = (req, res) => {
             }
                 var processvalue = [];
                 var value = 0;
+                var previous = 0;
+                var commitedrating;
+                var currentrating;
                 for(let item of contracts) {
                     value = 0;
                     previous = 0;
@@ -354,9 +380,11 @@ exports.getSpendByDept = (req, res) => {
                         if(item == items['ContractName']) {
                             value = value + parseInt(items[type]);
                             previous = previous + parseInt(items[commited]);
+                            commitedrating = parseInt(items['CommitedCV_rating']);
+                            currentrating = parseInt(items['CurrentCV_rating']);
                         }
                     }
-                    processvalue.push({name: item, value: value, color: '', previous: previous, y: value});
+                    processvalue.push({name: item, value: value, color: '', previous: previous, y: value, commitedrating: commitedrating, currentrating: currentrating});
                 }
                 for(var i=0; i<processvalue.length; i++) {
                     for(var j=0; j<colorcodes.length; j++) {
@@ -416,4 +444,99 @@ exports.getSpendByDept = (req, res) => {
                 // res.send({message:err});
             }
         });
+    }
+
+    exports.postSSrating = (req,res) => {
+        console.log(req.body);
+        if(req.body.type == 'CommittedAmount_2019') {
+            CatModel.updateMany({ SupplierName: req.body.name }, { CommitedSS_rating: req.body.rating }, (err, docs) => {
+                if (!err) {
+                    // console.log('if',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }else {
+            CatModel.updateMany({ SupplierName: req.body.name }, { CurrentSS_rating: req.body.rating }, (err, docs) => {
+                if (!err) {
+                    // console.log('else',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }
+        
+    }
+
+    exports.postSCrating = (req,res) => {
+        // console.log(req.body);
+        if(req.body.type == 'CommittedAmount_2019') {
+            CatModel.updateMany({ Category: req.body.name }, { CommitedSC_rating: req.body.rating }, (err, docs) => {
+                if (!err) {
+                    // console.log('if',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }else {
+            CatModel.updateMany({ Category: req.body.name }, { CurrentSC_rating: req.body.rating }, (err, docs) => {
+                if (!err) {
+                    // console.log('else',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }
+        
+    }
+
+    exports.postSDrating = (req,res) => {
+        // console.log(req.body);
+        if(req.body.type == 'CommittedAmount_2019') {
+            CatModel.updateMany({ DeptBU: req.body.name }, { CommitedSD_rating: req.body.rating }, (err, docs) => {
+                if (!err) {
+                    // console.log('if',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }else {
+            CatModel.updateMany({ DeptBU: req.body.name }, { CurrentSD_rating: req.body.rating }, (err, docs) => {
+                if (!err) {
+                    // console.log('else',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }
+        
+    }
+
+    exports.postCVrating = (req,res) => {
+        // console.log(req.body);
+        if(req.body.type == 'CommittedAmount_2019') {
+            CatModel.updateMany({ ContractName: req.body.name }, { CommitedCV_rating: req.body.rating }, (err, docs) => {
+                if (!err) {
+                    // console.log('if',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }else {
+            CatModel.updateMany({ ContractName: req.body.name }, { CurrentCV_rating: req.body.rating }, (err, docs) => {
+                if (!err) {
+                    // console.log('else',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }
+        
+    }
+
+    exports.supplierfilters = (req,res) => {
+        var suppliers = [];
+          CatModel.find({}, (err, docs) => {
+              if(!err) {
+                suppliers = docs.reduce(function(a, d) {
+                    if (a.indexOf(d.SupplierName) === -1) {
+                        a.push(d.SupplierName);
+                    }
+                    return a;
+                }, []);
+                res.status(200).send({data: suppliers})
+              }
+          })
     }

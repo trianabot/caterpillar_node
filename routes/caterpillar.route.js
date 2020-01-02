@@ -21,6 +21,18 @@ router.get('/totalVendorsContracts', caterpillarController.totalVendorsContracts
 
 router.get('/digitalSavings', caterpillarController.digitalsavings);
 
+router.post('/postSSRating', caterpillarController.postSSrating);
+
+router.post('/postSCRating', caterpillarController.postSCrating);
+
+router.post('/postSDRating', caterpillarController.postSDrating);
+
+router.post('/postCVRating', caterpillarController.postCVrating);
+
 router.post('/postCaterpillarOverview', caterpillarController.postCatOverview);
+
+///////supplierscreen
+
+router.get('/supplierfilters', caterpillarController.supplierfilters);
 
 module.exports = router;

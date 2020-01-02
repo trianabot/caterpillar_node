@@ -58,6 +58,36 @@ let caterpillarModel = new Schema({
     },
     Spend_2019: {
         type: String
+    },
+    CommitedSS_rating: {
+        type: Number
+    },
+    CurrentSS_rating: {
+        type: Number
+    },
+    CommitedSC_rating: {
+        type: Number
+    },
+    CurrentSC_rating: {
+        type: Number
+    },
+    CommitedSD_rating: {
+        type: Number
+    },
+    CurrentSD_rating: {
+        type: Number
+    },
+    CommitedSavings_rating: {
+        type: Number
+    },
+    CurrentSavings_rating: {
+        type: Number
+    },
+    CommitedCV_rating: {
+        type: Number
+    },
+    CurrentCV_rating: {
+        type: Number
     }
 });
 
