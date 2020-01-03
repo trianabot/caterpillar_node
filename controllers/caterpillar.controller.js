@@ -507,24 +507,26 @@ exports.getSpendByDept = (req, res) => {
     }
 
     exports.postCVrating = (req,res) => {
-        // console.log(req.body);
+        console.log(req.body);
         if(req.body.type == 'CommittedAmount_2019') {
             CatModel.updateMany({ ContractName: req.body.name }, { CommitedCV_rating: req.body.rating }, (err, docs) => {
                 if (!err) {
-                    // console.log('if',docs);
+                    console.log('if',docs);
                     res.status(200).send('updated succesfully');
                 }
             });
-        }else {
+        }else if(req.body.type == 'CurrentAmount_2019') {
             CatModel.updateMany({ ContractName: req.body.name }, { CurrentCV_rating: req.body.rating }, (err, docs) => {
                 if (!err) {
-                    // console.log('else',docs);
+                    console.log('else',docs);
                     res.status(200).send('updated succesfully');
                 }
             });
         }
         
     }
+
+    ////supplierscreen
 
     exports.supplierfilters = (req,res) => {
         var suppliers = [];
@@ -540,3 +542,118 @@ exports.getSpendByDept = (req, res) => {
               }
           })
     }
+
+    exports.getbysupplier = (req, res) => {
+        var suppliername = req.params.name;
+        CatModel.find({}, (err, docs)=> {
+            if(!err) {
+                const docss = processdata(docs);
+                res.status(200).send(docss);
+            }
+        });
+        function processdata(docs) {
+              var commited = 0;
+              var current = 0;
+              var AnnualisedS = 0;
+              var CurrentS = 0;
+              var contracts = [];
+              var processData = [];
+              var annualisedsavings = 0;
+              var currentsavings = 0;
+              var totalcontracts = [];
+              var enterprises = [];
+              for(let item of docs) {
+                  if(item['SupplierName'] == suppliername) {
+                      commited = commited + parseInt(item['CommittedAmount_2019']);
+                      current = current + parseInt(item['CurrentAmount_2019']);
+                      AnnualisedS = AnnualisedS + parseInt(item['CommittedAmount_2018']);
+                      CurrentS = CurrentS + parseInt(item['CurrentAmount_2018']);
+                      contracts.push(item['ContractName']);
+                      enterprises.push(item['Enterprises']);
+                    //   console.log(item);
+
+                  }
+              }
+              annualisedsavings = commited - AnnualisedS;
+              currentsavings = current - CurrentS;
+              contracts = contracts.reduce(function(a, d) {
+                if (a.indexOf(d) === -1) {
+                    a.push(d);
+                }
+                return a;
+            }, []);
+            enterprises = enterprises.reduce(function(a, d) {
+                if (a.indexOf(d) === -1) {
+                    a.push(d);
+                }
+                return a;
+            }, []);
+            // console.log(enterprises);
+            const CVdata = processCVData(contracts, docs);
+            const CVChartdata = processCVChart(enterprises, docs);
+            processData.push({commitedSpend: commited, currentSpend: current, contracts: contracts.length, ASavings: annualisedsavings, CSavings: currentsavings, cvdata: CVdata, chartdata: CVChartdata});
+
+              return processData;
+        }
+
+        function processCVData(contracts, docs) {
+            var cvdata = [];
+            var commitedCV = 0;
+            var currentCV = 0;
+            var commitedrating;
+            var currentrating;
+            for(let item of contracts) {
+                commitedCV = 0;
+                currentCV = 0;
+                for(let items of docs) {
+                    if(items['SupplierName'] == suppliername && items['ContractName'] == item) {
+                        // console.log(items);
+                        commitedCV = commitedCV + parseInt(items['CommittedAmount_2019']);
+                        currentCV = commitedCV + parseInt(items['CurrentAmount_2019']);
+                        commitedrating = items['CommitedCV_rating'];
+                        currentrating = items['CurrentCV_rating'];
+                    }
+                }
+                // console.log(commitedCV);
+                cvdata.push({ContractName: item, commited: commitedCV, current: currentCV, crs: 23, commitedrating: commitedrating, currentrating: currentrating})
+            }
+
+            return cvdata;
+        }
+
+        function processCVChart(enterprises, docs) {
+            // console.log(enterprises);
+            var enterpriseChartdata = [];
+            var enterpriseSpend = 0;
+            // if(enterprises) {
+                for(let item of enterprises) {
+                    enterpriseSpend = 0;
+                    for(let items of docs) {
+                        if(items['SupplierName'] == suppliername && items['Enterprises'] == item) {
+                              enterpriseSpend = enterpriseSpend + parseInt(items['Enterprise_Spend']);
+                        }
+                    }
+                    enterpriseChartdata.push({name: item, y: enterpriseSpend});
+                }
+                // console.log(enterpriseChartdata);
+                return enterpriseChartdata;
+            // }
+        }
+    }
+
+///////category profile
+
+  exports.getCategories = (req, res) => {
+    var category = [];
+    CatModel.find({}, (err, docs) => {
+        if(!err) {
+            category = docs.reduce(function(a, d) {
+              if (a.indexOf(d.Category) === -1) {
+                  a.push(d.Category);
+              }
+              return a;
+          }, []);
+          res.status(200).send({data: category})
+        }
+    })
+  }

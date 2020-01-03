@@ -35,4 +35,11 @@ router.post('/postCaterpillarOverview', caterpillarController.postCatOverview);
 
 router.get('/supplierfilters', caterpillarController.supplierfilters);
 
+router.get('/getbysupplier/:name', caterpillarController.getbysupplier);
+
+
+//////category profile
+
+router.get('/getcategoryfilters', caterpillarController.getCategories);
+
 module.exports = router;

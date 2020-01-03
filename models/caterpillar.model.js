@@ -88,6 +88,12 @@ let caterpillarModel = new Schema({
     },
     CurrentCV_rating: {
         type: Number
+    },
+    Enterprises: {
+        type: String
+    },
+    Enterprise_Spend: {
+        type: Number
     }
 });
 
