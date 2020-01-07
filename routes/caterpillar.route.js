@@ -42,4 +42,12 @@ router.get('/getbysupplier/:name', caterpillarController.getbysupplier);
 
 router.get('/getcategoryfilters', caterpillarController.getCategories);
 
+router.get('/getbycategory/:name', caterpillarController.getCategoryInfo);
+
+///////deptBU
+
+router.get('/getdeptbufilters', caterpillarController.getDeptfilters);
+
+router.get('/getbydeptbu/:name', caterpillarController.getbyDeptBuInfo);
+
 module.exports = router;

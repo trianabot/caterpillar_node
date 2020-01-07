@@ -657,3 +657,167 @@ exports.getSpendByDept = (req, res) => {
         }
     })
   }
+
+  exports.getCategoryInfo = (req, res) => {
+      var category = req.params.name;
+      CatModel.find({},(err, docs) => {
+          if(!err) {
+             var metadata = processData(docs);
+             var tabledata = processTableData(docs);
+             var chartdata = processChartdata(docs);
+               res.status(200).send({metadata: metadata, tabledata: tabledata, chartdata: chartdata});
+          }
+      });
+      function processData(docs) {
+          var metadata = [];
+          var suppliers = [];
+        // console.log('commitedAmount',commitedAmount);
+        var result = docs.filter(x => x.Category == category);
+        var commitedAmount2019 = result.reduce((a, b) => a + (parseInt(b['CommittedAmount_2019']) || 0), 0);
+        var currentAmount2019 = result.reduce((a, b) => a + (parseInt(b['CurrentAmount_2019']) || 0), 0);
+        var commitedAmount2018 = result.reduce((a, b) => a + (parseInt(b['CommittedAmount_2018']) || 0), 0);
+        var currentAmount2018 = result.reduce((a, b) => a + (parseInt(b['CurrentAmount_2018']) || 0), 0);
+        var currentSavings = commitedAmount2019 - currentAmount2018;
+        var annualised = commitedAmount2018 - currentAmount2018;
+        suppliers = result.reduce(function(a, d) {
+            if (a.indexOf(d.SupplierName) === -1) {
+                a.push(d.SupplierName);
+            }
+            return a;
+        }, []);
+        metadata.push({commitedSpend: commitedAmount2019, currentSpend: currentAmount2019, currentSavings: currentSavings, annualisedSavings: annualised, totalSuppliers: suppliers.length});
+        return metadata;
+      }
+      function processTableData(docs) {
+          var tabledata = [];
+          var cat = [];
+          var commited = 0;
+          var currentx = 0;
+          var final = [];
+          var result = docs.filter(x => x.Category == category);
+         
+          tabledata = result.reduce(function(a,d) {
+               a.push({SupplierName: d.SupplierName, Commited: parseInt(d.CommittedAmount_2019), Current: parseInt(d.CurrentAmount_2019), Rating: d.CommitedSS_rating})
+               return a;
+            }, []);
+            cat = tabledata.reduce(function(a,d) {
+                if(a.indexOf(d.SupplierName) === -1) {
+                    a.push(d.SupplierName);
+                }
+                return a;
+            }, []);
+
+          for(let item of cat) {
+              commited = 0;
+              currrentx = 0;
+              var rating;
+              for(let items of tabledata) {
+                  commited = commited + items['Commited'];
+                  currentx = currentx + items['Current'];
+                  rating = items['Rating'];
+              }
+              final.push({SupplierName: item, Commited: commited, Current: currentx, Rating: rating})
+          }
+          return final;
+
+      }
+
+      function processChartdata(docs) {
+        var dept = [];
+        var final = [];
+        var commited = 0;
+        var result = docs.filter(x => x.Category == category);
+        dept = result.reduce(function(a,d) {
+            if(a.indexOf(d.DeptBU) === -1) {
+                a.push(d.DeptBU);
+            }
+            return a;
+        }, []);
+
+        for(let item of dept) {
+            commited = 0;
+            for(let items of result) {
+                 commited = commited + parseInt(items['CommittedAmount_2019']);
+            }
+            final.push({name: item,  y: commited});
+        }
+        return final;
+      }
+  }
+
+  //////deptbu
+
+  exports.getDeptfilters = (req, res) => {
+        CatModel.find({}, (err, docs) => {
+            var deptbu = [];
+            if(!err) {
+                deptbu = docs.reduce(function(a,d) {
+                    if(a.indexOf(d.DeptBU) === -1) {
+                        a.push(d.DeptBU);
+                    }
+                    return a;
+                }, []);
+                res.status(200).send(deptbu);
+            }
+        })
+  }
+
+  exports.getbyDeptBuInfo = (req, res) => {
+      var deptbu = req.params.name;
+    CatModel.find({}, (err, docs) => {
+        var deptbu = [];
+        if(!err) {
+            var metadata = processData(docs);
+            var chartdata = processChartdata(docs);
+            res.status(200).send({metadata: metadata, chartdata: chartdata});
+        }
+    });
+    function processData(docs) {
+        var metadata = [];
+        var suppliers = [];
+        var contracts = [];
+      // console.log('commitedAmount',commitedAmount);
+      var result = docs.filter(x => x.DeptBU == deptbu);
+      var commitedAmount2019 = result.reduce((a, b) => a + (parseInt(b['CommittedAmount_2019']) || 0), 0);
+      var currentAmount2019 = result.reduce((a, b) => a + (parseInt(b['CurrentAmount_2019']) || 0), 0);
+      var commitedAmount2018 = result.reduce((a, b) => a + (parseInt(b['CommittedAmount_2018']) || 0), 0);
+      var currentAmount2018 = result.reduce((a, b) => a + (parseInt(b['CurrentAmount_2018']) || 0), 0);
+      var currentSavings = commitedAmount2019 - currentAmount2018;
+      var annualised = commitedAmount2018 - currentAmount2018;
+      suppliers = result.reduce(function(a, d) {
+          if (a.indexOf(d.SupplierName) === -1) {
+              a.push(d.SupplierName);
+          }
+          return a;
+      }, []);
+      contracts = result.reduce(function(a, d) {
+        if (a.indexOf(d.ContractName) === -1) {
+            a.push(d.ContractName);
+        }
+        return a;
+    }, []);
+      metadata.push({commitedSpend: commitedAmount2019, currentSpend: currentAmount2019, currentSavings: currentSavings, annualisedSavings: annualised, totalSuppliers: suppliers.length, contracts: contracts.length});
+      return metadata;
+    }
+
+    function processChartdata(docs) {
+        var contracts = [];
+        var result = docs.filter(x => x.DeptBU == deptbu);
+        contracts = result.reduce(function(a, d) {
+            if (a.indexOf(d.ContractName) === -1) {
+                a.push(d.ContractName);
+            }
+            return a;
+        }, []);
+        var commited;
+        var final = [];
+        for(let item of contracts) {
+            commited = 0;
+            for(let items of result) {
+                commited = commited + parseInt(items['CommittedAmount_2019']);
+            }
+            final.push({name: item, y: commited});
+        }
+        return final;
+    }
+}
