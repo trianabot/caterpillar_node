@@ -60,13 +60,15 @@ exports.getCatOverviewSpend = (req, res) => {
             var otherprevious = 0;
             var othercommitedrating;
             var othercurrentrating;
+            var othercolor;
             for (let item of intersection) {
                 othercount = othercount + parseInt(item['y']);
                 otherprevious = otherprevious + parseInt(item['previous']);
                 othercommitedrating = parseInt(item['commitedrating']);
-                othercurrentrating = parseInt(item['currentrating'])
+                othercurrentrating = parseInt(item['currentrating']);
+                othercolor = item['color'];
             }
-            docss.push({"name": "Others", "y": othercount, previous: otherprevious, commitedrating: othercommitedrating, currentrating: othercurrentrating})
+            docss.push({"name": "Others", "y": othercount, previous: otherprevious, commitedrating: othercommitedrating, currentrating: othercurrentrating, color: othercolor})
             for(let item of docss) {
                 suppliernames.push(item['SupplierName']);
             }
@@ -97,6 +99,7 @@ exports.getCatOverviewSpend = (req, res) => {
 
     function processdata(docs, supp, type) {
         var processvalue = [];
+        var colorcodes = ['#7cc0f7', '#ff4b4c', '#070fb0', '#1769a3', '#1aa8a9', '#ffac4e', '#03cb44', '#ff6b1b', '#a42cee', '#ff4d6f'];
         var value = 0;
         var previous = 0;
         var commitedrating;
@@ -112,7 +115,13 @@ exports.getCatOverviewSpend = (req, res) => {
                     currentrating = parseInt(items['CurrentSS_rating']);
                 }
             }
-            processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating});
+            processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:''});
+        }
+
+        for(var i=0; i<processvalue.length; i++) {
+            for(var j=0; j<colorcodes.length; j++) {
+                processvalue[i]['color'] = colorcodes[i];
+            }
         }
         return processvalue;
     }
@@ -148,6 +157,7 @@ exports.getCatOverviewSpend = (req, res) => {
         });
         function processdata(docs, supp, type) {
             var processvalue = [];
+            var colorcodes = ['#7cc0f7', '#ff4b4c', '#070fb0', '#1769a3', '#1aa8a9', '#ffac4e', '#03cb44', '#ff6b1b', '#a42cee', '#ff4d6f'];
             var value = 0;
             var previous = 0;
             var commitedrating;
@@ -165,7 +175,12 @@ exports.getCatOverviewSpend = (req, res) => {
                         currentrating = parseInt(items['CurrentSC_rating']);
                     }
                 }
-                processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating});
+                processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:''});
+            }
+            for(var i=0; i<processvalue.length; i++) {
+                for(var j=0; j<colorcodes.length; j++) {
+                    processvalue[i]['color'] = colorcodes[i];
+                }
             }
             return processvalue;
         }
@@ -200,6 +215,7 @@ exports.getSpendByDept = (req, res) => {
     });
     function processdata(docs, supp, type) {
         var processvalue = [];
+        var colorcodes = ['#7cc0f7', '#ff4b4c', '#070fb0', '#1769a3', '#1aa8a9', '#ffac4e', '#03cb44', '#ff6b1b', '#a42cee', '#ff4d6f'];
         var value = 0; 
         var previous = 0;
         var commitedrating;
@@ -215,7 +231,12 @@ exports.getSpendByDept = (req, res) => {
                     currentrating = parseInt(items['CurrentSD_rating']);
                 }
             }
-            processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating});
+            processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:''});
+        }
+        for(var i=0; i<processvalue.length; i++) {
+            for(var j=0; j<colorcodes.length; j++) {
+                processvalue[i]['color'] = colorcodes[i];
+            }
         }
         return processvalue;
     }
@@ -251,7 +272,7 @@ exports.getSpendByDept = (req, res) => {
                 for (let item of intersection) {
                     othercount = othercount + parseInt(item['value']);
                 }
-                sorteddata.push({"name": "Others", "value": othercount})
+                sorteddata.push({"name": "Others", "y": othercount})
                 res.status(200).send({ data: sorteddata, suppliers: suppliername });
             } else {
                 return next(err);
@@ -287,7 +308,7 @@ exports.getSpendByDept = (req, res) => {
                      }
                  }
                  savings = spend2019 - spend2018;
-                 suppliersaving.push({name: item, value: savings, color:''});
+                 suppliersaving.push({name: item, y: savings, color:''});
              }
 
              for(var i=0; i<suppliersaving.length; i++) {
@@ -330,7 +351,7 @@ exports.getSpendByDept = (req, res) => {
                     otherCOrating = item['commitedrating'];
                     otherCUrating = item['currentrating'];
                 }
-                sortedvalue.push({name:'other', value: othervalue, color: othercolor, previous: otherprevious , y: othery, commitedrating: otherCOrating, currentrating: otherCUrating});
+                sortedvalue.push({name:'other', y: othervalue, color: othercolor, previous: otherprevious , y: othery, commitedrating: otherCOrating, currentrating: otherCUrating});
 
                 // console.log('process',sortedvalue);
                 res.status(200).send({ data: sortedvalue, contracts: contracts.slice(0,10)});
@@ -384,7 +405,7 @@ exports.getSpendByDept = (req, res) => {
                             currentrating = parseInt(items['CurrentCV_rating']);
                         }
                     }
-                    processvalue.push({name: item, value: value, color: '', previous: previous, y: value, commitedrating: commitedrating, currentrating: currentrating});
+                    processvalue.push({name: item, y: value, color: '', previous: previous, y: value, commitedrating: commitedrating, currentrating: currentrating});
                 }
                 for(var i=0; i<processvalue.length; i++) {
                     for(var j=0; j<colorcodes.length; j++) {
@@ -433,7 +454,7 @@ exports.getSpendByDept = (req, res) => {
                 var goal = [];
                 var actual = [];
                 for(let item of docs) {
-                    goal.push(parseInt(item['CommittedAmount_2019']));
+                    goal.push(8000000);
                     actual.push(parseInt(item['CurrentAmount_2019']));
                 }
                 goal = goal.slice(0,100);
