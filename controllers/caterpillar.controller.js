@@ -269,10 +269,12 @@ exports.getSpendByDept = (req, res) => {
                 const sorteddata = processsort(docss);
                 let intersection = sorteddata.filter(x => !docss.includes(x));
                 var othercount = 0;
+                var othercolor;
                 for (let item of intersection) {
                     othercount = othercount + parseInt(item['value']);
+                    othercolor = item['color'];
                 }
-                sorteddata.push({"name": "Others", "y": othercount})
+                sorteddata.push({"name": "Others", "y": othercount, color: othercolor, tablecolor: ''})
                 res.status(200).send({ data: sorteddata, suppliers: suppliername });
             } else {
                 return next(err);
@@ -308,7 +310,7 @@ exports.getSpendByDept = (req, res) => {
                      }
                  }
                  savings = spend2019 - spend2018;
-                 suppliersaving.push({name: item, y: savings, color:''});
+                 suppliersaving.push({name: item, y: savings, color:'', tablecolor: ''});
              }
 
              for(var i=0; i<suppliersaving.length; i++) {
