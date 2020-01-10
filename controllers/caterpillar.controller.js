@@ -839,7 +839,7 @@ exports.getSpendByDept = (req, res) => {
             for(let items of result) {
                 commited = commited + parseInt(items['CommittedAmount_2019']);
             }
-            final.push({name: item, y: commited});
+            final.push({name: item, y: commited, color: ''});
         }
         return final;
     }
