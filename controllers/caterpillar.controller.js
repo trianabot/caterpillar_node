@@ -735,9 +735,11 @@ exports.getSpendByDept = (req, res) => {
               currrentx = 0;
               var rating;
               for(let items of tabledata) {
-                  commited = commited + items['Commited'];
-                  currentx = currentx + items['Current'];
-                  rating = items['Rating'];
+                  if(item == items['SupplierName']) {
+                    commited = commited + items['Commited'];
+                    currentx = currentx + items['Current'];
+                    rating = items['Rating'];
+                  }
               }
               final.push({SupplierName: item, Commited: commited, Current: currentx, Rating: rating})
           }
@@ -760,7 +762,9 @@ exports.getSpendByDept = (req, res) => {
         for(let item of dept) {
             commited = 0;
             for(let items of result) {
-                 commited = commited + parseInt(items['CommittedAmount_2019']);
+                if(item == items['DeptBU']) {
+                    commited = commited + parseInt(items['CommittedAmount_2019']);
+                }
             }
             final.push({name: item,  y: commited});
         }
@@ -792,7 +796,8 @@ exports.getSpendByDept = (req, res) => {
         if(!err) {
             var metadata = processData(docs);
             var chartdata = processChartdata(docs);
-            res.status(200).send({metadata: metadata, chartdata: chartdata});
+            var tabledata = processTabledata(docs);
+            res.status(200).send({metadata: metadata, chartdata: chartdata, tabledata: tabledata});
         }
     });
     function processData(docs) {
@@ -837,7 +842,36 @@ exports.getSpendByDept = (req, res) => {
         for(let item of contracts) {
             commited = 0;
             for(let items of result) {
-                commited = commited + parseInt(items['CommittedAmount_2019']);
+                if(item == items['ContractName']) {
+                    commited = commited + parseInt(items['CommittedAmount_2019']);
+                }
+                    
+                
+            }
+            final.push({name: item, y: commited, color: ''});
+        }
+        return final;
+    }
+
+    function processTabledata(docs) {
+        var contracts = [];
+        var result = docs.filter(x => x.DeptBU == deptbu);
+        contracts = result.reduce(function(a, d) {
+            if (a.indexOf(d.ContractName) === -1) {
+                a.push(d.ContractName);
+            }
+            return a;
+        }, []);
+        var commited;
+        var final = [];
+        for(let item of contracts) {
+            commited = 0;
+            for(let items of result) {
+
+                if(item == items['ContractName']) {
+                    commited = commited + parseInt(items['CommittedAmount_2019']);
+                }
+                
             }
             final.push({name: item, y: commited, color: ''});
         }
