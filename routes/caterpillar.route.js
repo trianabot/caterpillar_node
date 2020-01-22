@@ -35,19 +35,19 @@ router.post('/postCaterpillarOverview', caterpillarController.postCatOverview);
 
 router.get('/supplierfilters', caterpillarController.supplierfilters);
 
-router.get('/getbysupplier/:name', caterpillarController.getbysupplier);
+router.get('/getbysupplier', caterpillarController.getbysupplier);
 
 
 //////category profile
 
 router.get('/getcategoryfilters', caterpillarController.getCategories);
 
-router.get('/getbycategory/:name', caterpillarController.getCategoryInfo);
+router.get('/getbycategory', caterpillarController.getCategoryInfo);
 
 ///////deptBU
 
 router.get('/getdeptbufilters', caterpillarController.getDeptfilters);
 
-router.get('/getbydeptbu/:name', caterpillarController.getbyDeptBuInfo);
+router.get('/getbydeptbu', caterpillarController.getbyDeptBuInfo);
 
 module.exports = router;

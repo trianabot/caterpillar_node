@@ -567,7 +567,7 @@ exports.getSpendByDept = (req, res) => {
     }
 
     exports.getbysupplier = (req, res) => {
-        var suppliername = req.params.name;
+        var suppliername = req.query.param;
         CatModel.find({}, (err, docs)=> {
             if(!err) {
                 const docss = processdata(docs);
@@ -682,7 +682,7 @@ exports.getSpendByDept = (req, res) => {
   }
 
   exports.getCategoryInfo = (req, res) => {
-      var category = req.params.name;
+      var category = req.query.param;
       CatModel.find({},(err, docs) => {
           if(!err) {
              var metadata = processData(docs);
@@ -790,7 +790,7 @@ exports.getSpendByDept = (req, res) => {
   }
 
   exports.getbyDeptBuInfo = (req, res) => {
-      var deptbu = req.params.name;
+      var deptbu = req.query.param;
     CatModel.find({}, (err, docs) => {
         var deptbu = [];
         if(!err) {
