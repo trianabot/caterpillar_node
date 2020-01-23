@@ -28,6 +28,10 @@ router.get('/manager', user_controller.manager);
 
 router.post('/registerCaterpillar', user_controller.registerCaterpillar );
 
+router.get('/getallusers', user_controller.getallusers);
+
+router.post('/updateuser', user_controller.updateUser);
+
 // router.post('/resend', userController.resendTokenPost);
 
 module.exports = router;

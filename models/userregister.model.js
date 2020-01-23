@@ -28,14 +28,14 @@ let userRegistrationSchema = new Schema({
         type: String,
         required: true
     },
-    industries: [{ type: String,required: true}],
+    industries: [{ type: String,required: false}],
     industriesUsecase: [{
         industryName: { type: String },
         industriesUsecase: [{
             type: String,
         }]
     }],
-    organizationCategory: [{type: String}],
+    organizationCategory: {type: String},
     OTI: {
         type: String
     },

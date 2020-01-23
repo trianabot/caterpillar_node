@@ -444,8 +444,29 @@ exports.getusecase = (req, res, next) => {
     });
 }
 
+exports.getallusers = (req, res, next) => {
+    UserRegisterModel.find({},(err, users) => {
+        res.status(200).send({data: users})
+    });
+}
+
+exports.updateUser = (req,res,next) => {
+    UserRegisterModel.update({emailId: req.body.emailId}, req.body, (err, user) => {
+        if(!err) {
+            // res.status(200).send(user);
+            updateUserinfo(req.body);
+        }
+    });
+    function updateUserinfo(user) {
+         LoginInfoModel.update({emailId: user.emailId}, user, (err, doc) => {
+               if(!err) {
+                res.status(200).send(doc);
+               }
+         });
+    }
+}
+
 exports.registerCaterpillar = (req, res, next) => {
-    console.log(req.body);
     LoginInfoModel.findOne({ emailId: req.body.emailId }, (err, user) => {
         if(user) return res.status(400).send({ message: 'The email address you have entered is already associated with another account.' });
     });
