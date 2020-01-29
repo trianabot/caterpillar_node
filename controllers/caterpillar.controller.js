@@ -457,7 +457,7 @@ exports.getSpendByDept = (req, res) => {
                 var goal = [];
                 var actual = [];
                 for(let item of docs) {
-                    goal.push(800000);
+                    goal.push(150000);
                     actual.push(parseInt(item['CurrentAmount_2019']));
                 }
                 goal = goal.slice(0,100);
