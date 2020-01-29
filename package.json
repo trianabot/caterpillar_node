@@ -26,6 +26,7 @@
     "passport": "^0.4.0",
     "passport-jwt": "^4.0.0",
     "randomstring": "^1.1.5",
+    "simple-excel-to-json": "^2.2.1",
     "uuid4": "^1.1.4",
     "xls-to-json-lc": "^0.3.4",
     "xlsx-to-json-lc": "^0.5.0"

@@ -99,4 +99,4 @@ let caterpillarModel = new Schema({
 
 
 
-module.exports = mongoose.model('caterpillar', caterpillarModel);
+module.exports = mongoose.model('caterpiller', caterpillarModel);

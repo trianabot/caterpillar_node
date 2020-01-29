@@ -9,6 +9,7 @@ const xlstojson = require("xls-to-json-lc");
 const xlsxtojson = require("xlsx-to-json-lc");
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
+const CatModel = require('../models/caterpillar.model');
 
 
 var store = multer.diskStorage({
@@ -49,7 +50,8 @@ router.post('/upload', (req, res, next) => {
 function processCsv(req, res) {
 
     const csvfile = req.file.path;
-    const collectionName = req.file.originalname.split('.')[0];
+    // const collectionName = req.file.originalname.split('.')[0];
+    const collectionName = "rawdata";
 
 
     csv()
@@ -73,13 +75,14 @@ function processCsv(req, res) {
                 Collection1 = mongoose.model(collectionName);
             }
             console.log(jsonObj);
-            Collection1.create(jsonObj, function (err) {
+            Collection1.create(jsonObj, function (err, docs) {
                 if (err) {
                     console.log(err);
                     res.send({ message: err });
                 } else {
                     console.log("inserted");
-                    res.send({ Message: "Data inserted to db" , apiurl : 'http:\/\/' + req.headers.host + '\/file\/' + collectionName.toLowerCase() + 's'});
+                    var result = storeinfinal(docs);
+                    res.send({ Message: "Data inserted to db" , apiurl : 'http:\/\/' + req.headers.host + '\/file\/' + collectionName.toLowerCase() + 's', result: docs});
                 }
             });
         });
@@ -88,7 +91,8 @@ function processCsv(req, res) {
 
 function processExcel(exceltojson, req, res) {
     try {
-        const collectionName = req.file.originalname.split('.')[0];
+        // const collectionName = req.file.originalname.split('.')[0];
+        const collectionName = "rawdata";
         exceltojson({
             input: req.file.path,
             output: null, //since we don't need output.json
@@ -100,6 +104,7 @@ function processExcel(exceltojson, req, res) {
             var setarr = result.slice();
             var sample = setarr[0];
             for (var key in sample) {
+                // console.log(key);
                 if (sample.hasOwnProperty(key)) {
                     sample[key] = {}
                 }
@@ -113,18 +118,109 @@ function processExcel(exceltojson, req, res) {
             } catch (e) {
                 Collection1 = mongoose.model(collectionName);
             }
-            Collection1.create(result, function (err) {
+            Collection1.create(result, function (err, docs) {
                 if (err) {
                     console.log(err);
                     res.send({ message: err });
                 } else {
-                    console.log("inserted");
-                    res.send({ Message: "Data inserted to db" , apiurl: 'http:\/\/' + req.headers.host + '\/file\/' + collectionName.toLowerCase() + 's'});
+                    console.log("inserted", docs);
+                    var result = storeinfinal(docs);
+                    res.send({ Message: "Data inserted to db" , apiurl: 'http:\/\/' + req.headers.host + '\/file\/' + collectionName.toLowerCase() + 's', result: result});
                 }
             });
         });
     } catch (e) {
-        res.json({ error_code: 1, err_desc: "Corrsupted excel file" });
+        res.json({ error_code: 1, err_desc: "Corrupted excel file" });
+    }
+
+    function storeinfinal(docs) {
+        var newkeys = ["Enterprise_Spend", "ContractID", "ContractName", "SupplierName", "Sup_PH", "Sup_mail", "Sup_Address", "Sup_City", "Sup_Country",
+            "MasterType", "ContractType", "ContractProjectType", "Category", "DeptBU", "CommittedAmount_2018",
+            "CommittedAmount_2019", "CurrentAmount_2018", "CurrentAmount_2019", "Spend_2018", "Spend_2019",
+            "CommitedSS_rating", "CurrentSS_rating", "CommitedSC_rating", "CurrentSC_rating",
+            "CommitedSD_rating", "CurrentSD_rating", "CommitedSavings_rating", "CurrentSavings_rating", "CommitedCV_rating", "CurrentCV_rating", "Enterprises"];
+        var refArray = [{ excelkey: "Enterprise_Spend", newKey: "Enterprise_Spend" },
+        { excelkey: "ContractID", newKey: "ContractID" },
+        { excelkey: "ContractName", newKey: "ContractName" },
+        { excelkey: "SupplierName", newKey: "SupplierName" },
+        { excelkey: "Sup_PH", newKey: "Sup_PH" },
+        { excelkey: "Sup_mail", newKey: "Sup_mail" },
+        { excelkey: "Sup_Address", newKey: "Sup_Address" },
+        { excelkey: "Sup_City", newKey: "Sup_City" }, { excelkey: "Sup_Country", newKey: "Sup_Country" },
+        { excelkey: "MasterType", newKey: "MasterType" }, { excelkey: "ContractType", newKey: "ContractType" },
+        { excelkey: "ContractProjectType", newKey: "ContractProjectType" }, { excelkey: "Category", newKey: "Category" },
+        { excelkey: "DeptBU", newKey: "DeptBU" }, { excelkey: "CommittedAmount_2018", newKey: "CommittedAmount_2018" },
+        { excelkey: "CommittedAmount_2019", newKey: "CommittedAmount_2019" }, { excelkey: "CurrentAmount_2018", newKey: "CurrentAmount_2018" },
+        { excelkey: "CurrentAmount_2019", newKey: "CurrentAmount_2019" }, { excelkey: "Spend_2018", newKey: "Spend_2018" },
+        { excelkey: "Spend_2019", newKey: "Spend_2019" }, { excelkey: "CommitedSS_rating", newKey: "CommitedSS_rating" },
+        { excelkey: "CurrentSS_rating", newKey: "CurrentSS_rating" },
+        { excelkey: "CommitedSC_rating", newKey: "CommitedSC_rating" },
+        { excelkey: "CurrentSC_rating", newKey: "CurrentSC_rating" },
+        { excelkey: "CommitedSD_rating", newKey: "CommitedSD_rating" },
+        { excelkey: "CurrentSD_rating", newKey: "CurrentSD_rating" },
+
+        { excelkey: "CommitedSavings_rating", newKey: "CommitedSavings_rating" },
+        { excelkey: "CurrentSavings_rating", newKey: "CurrentSavings_rating" },
+
+        { excelkey: "CommitedCV_rating", newKey: "CommitedCV_rating" },
+        { excelkey: "CurrentCV_rating", newKey: "CurrentCV_rating" },
+        { excelkey: "Enterprises", newKey: "Enterprises" },
+        ]
+        var obj = newkeys.reduce(function (o, val) { o[val] = null; return o; }, {});
+        var final = [];
+        var result = [];
+
+        result = docs;
+        for (let item of docs) {
+            final.push(obj);
+        }
+        final = final.map(function (el, i) {
+            var o = Object.assign({}, el);
+            o.uuid = i;
+            return o;
+        });
+        // result = docs;
+        result = docs.map(function (el, i) {
+            // console.log(el);
+            var o = Object.assign({}, el);
+            o.uuid = i;
+            return o;
+        });
+        //   res.status(200).send(result);
+        final.forEach(function (item) {
+            refArray.forEach(function (data) {
+                item[data['excelkey']] = result.find(x => x.uuid == item.uuid)['_doc'][data['newKey']];
+                // console.log(item[data['newkey']]);
+            });
+        });
+        final = final.map(function (el, i) {
+            var o = Object.assign({}, el);
+            delete o.uuid
+            return o;
+          })
+        //   final = final.splice(0, 1);
+
+        // return final;
+        var final = final.slice(1);
+        // var arr = [1, 2, 3, 4]; 
+        // arr = arr.shift(); // theRemovedElement == 1
+        // console.log(arr);
+        // var myarray = ["item 1", "item 2", "item 3", "item 4"];
+  
+        // console.log(myarray.slice(1));
+        if(final.length > 0) {
+            CatModel.insertMany(final, (err, docs) => {
+                if(!err) {
+                    // res.status(200).send({message: 'Saved Succesfully', data: docs})
+                    // console.log(docs);
+                    return docs;
+                }else {
+                                    return (err);
+                                    // res.send({message:err});
+                                }
+            });
+        }
+        // return final
     }
 }
 

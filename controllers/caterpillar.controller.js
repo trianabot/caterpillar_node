@@ -30,7 +30,6 @@ exports.postCatOverview = (req, res) => {
 }
 
 exports.getCatOverviewSpend = (req, res) => {
-    // console.log(req.params.type);
     
     var type = req.params.type;
     var amounttype;
@@ -145,7 +144,8 @@ exports.getCatOverviewSpend = (req, res) => {
                     }
                     return a;
                 }, []);
-                const category = processdata(docs, categories, type);
+                var category = processdata(docs, categories, type);
+                category = category.sort((a, b) => b.y - a.y);
                 // const spendcategory = spendCategory(category, docs, type);
                 // let intersection = docs.filter(x => !category.includes(x));
                 res.status(200).send({ data: category.slice(0,10), categories: categories.slice(0,10)});
@@ -204,9 +204,10 @@ exports.getSpendByDept = (req, res) => {
                 }
                 return a;
             }, []);
-            const deptbu = processdata(docs, deptBu, type);
+            var deptbu = processdata(docs, deptBu, type);
+            deptbu = deptbu.sort((a, b) => b.y - a.y)
             // let intersection = docs.filter(x => !category.includes(x));
-            res.status(200).send({ data: deptbu, dept: deptBu});
+            res.status(200).send({ data: deptbu.slice(0,10), dept: deptBu});
         } else {
             return next(err);
             // res.send({message:err});
@@ -877,4 +878,39 @@ exports.getSpendByDept = (req, res) => {
         }
         return final;
     }
+}
+
+exports.testmodal = (req, res, next) => { 
+    var newkeys = ["ContractName", "SupplierName", "Sup_mail", "Sup_Address"];
+    var refArray = [{excelkey: "ContractName", newKey: "ContractName"},{excelkey: "SupplierName", newKey: "SupplierName"},{excelkey: "Sup_mail", newKey: "Sup_mail"},{excelkey: "Sup_Address", newKey: "Sup_Address"}]
+    var obj = newkeys.reduce(function (o, val) { o[val] = null; return o; }, {});
+    var final = [];
+    var result = [];
+    CatModel.find({}, (err, docs) => {
+        result = docs;
+        for(let item of docs) {
+           final.push(obj);
+        }
+        final = final.map(function (el, i) {
+            var o = Object.assign({}, el);
+            o.uuid = i;
+            return o;
+          });
+        // result = docs;
+        result = docs.map(function (el, i) {
+            // console.log(el);
+            var o = Object.assign({}, el);
+            o.uuid = i;
+            return o;
+          });
+        //   res.status(200).send(result);
+        final.forEach(function(item) {
+            refArray.forEach(function(data) {
+                item[data['excelkey']] = result.find(x=>x.uuid==item.uuid)['_doc'][data['newKey']];
+                // console.log(item[data['newkey']]);
+              });
+        });
+        res.status(200).send(final);
+        
+        });
 }
