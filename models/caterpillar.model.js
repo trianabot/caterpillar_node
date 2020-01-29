@@ -94,6 +94,36 @@ let caterpillarModel = new Schema({
     },
     Enterprise_Spend: {
         type: Number
+    },
+    CommitedSS_Comment: {
+        type: String
+    },
+    CurrentSS_Comment: {
+        type: String
+    },
+    CommitedSC_Comment: {
+        type: String
+    },
+    CurrentSC_Comment: {
+        type: String
+    },
+    CommitedSD_Comment: {
+        type: String
+    },
+    CurrentSD_Comment: {
+        type: String
+    },
+    CommitedSavings_Comment: {
+        type: String
+    },
+    CurrentSavings_Comment: {
+        type: String
+    },
+    CommitedCV_Comment: {
+        type: String
+    },
+    CurrentCV_Comment: {
+        type: String
     }
 });
 

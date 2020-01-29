@@ -138,7 +138,10 @@ function processExcel(exceltojson, req, res) {
             "MasterType", "ContractType", "ContractProjectType", "Category", "DeptBU", "CommittedAmount_2018",
             "CommittedAmount_2019", "CurrentAmount_2018", "CurrentAmount_2019", "Spend_2018", "Spend_2019",
             "CommitedSS_rating", "CurrentSS_rating", "CommitedSC_rating", "CurrentSC_rating",
-            "CommitedSD_rating", "CurrentSD_rating", "CommitedSavings_rating", "CurrentSavings_rating", "CommitedCV_rating", "CurrentCV_rating", "Enterprises"];
+            "CommitedSD_rating", "CurrentSD_rating", "CommitedSavings_rating", "CurrentSavings_rating", "CommitedCV_rating", "CurrentCV_rating", "Enterprises", 
+            "CommitedSS_Comment","CurrentSS_Comment", "CommitedSC_Comment", "CurrentSC_Comment", "CommitedSD_Comment", 
+            "CurrentSD_Comment", "CommitedSavings_Comment", "CurrentSavings_Comment", "CommitedCV_Comment",
+            "CurrentCV_Comment"];
         var refArray = [{ excelkey: "Enterprise_Spend", newKey: "Enterprise_Spend" },
         { excelkey: "ContractID", newKey: "ContractID" },
         { excelkey: "ContractName", newKey: "ContractName" },
@@ -158,13 +161,22 @@ function processExcel(exceltojson, req, res) {
         { excelkey: "CurrentSC_rating", newKey: "CurrentSC_rating" },
         { excelkey: "CommitedSD_rating", newKey: "CommitedSD_rating" },
         { excelkey: "CurrentSD_rating", newKey: "CurrentSD_rating" },
-
         { excelkey: "CommitedSavings_rating", newKey: "CommitedSavings_rating" },
         { excelkey: "CurrentSavings_rating", newKey: "CurrentSavings_rating" },
-
         { excelkey: "CommitedCV_rating", newKey: "CommitedCV_rating" },
         { excelkey: "CurrentCV_rating", newKey: "CurrentCV_rating" },
         { excelkey: "Enterprises", newKey: "Enterprises" },
+
+        { excelkey: "CommitedSS_Comment", newKey: "CommitedSS_Comment" },
+        { excelkey: "CurrentSS_Comment", newKey: "CurrentSS_Comment" },
+        { excelkey: "CommitedSC_Comment", newKey: "CommitedSC_Comment" },
+        { excelkey: "CurrentSC_Comment", newKey: "CurrentSC_Comment" },
+        { excelkey: "CommitedSD_Comment", newKey: "CommitedSD_Comment" },
+        { excelkey: "CurrentSD_Comment", newKey: "CurrentSD_Comment" },
+        { excelkey: "CommitedSavings_Comment", newKey: "CommitedSavings_Comment" },
+        { excelkey: "CurrentSavings_Comment", newKey: "CurrentSavings_Comment" },
+        { excelkey: "CommitedCV_Comment", newKey: "CommitedCV_Comment" },
+        { excelkey: "CurrentCV_Comment", newKey: "CurrentCV_Comment" },
         ]
         var obj = newkeys.reduce(function (o, val) { o[val] = null; return o; }, {});
         var final = [];
