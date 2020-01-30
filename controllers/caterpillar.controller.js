@@ -103,6 +103,7 @@ exports.getCatOverviewSpend = (req, res) => {
         var previous = 0;
         var commitedrating;
         var currentrating;
+        var comment;
         for(let item of supp) {
             value = 0;
             previous = 0;
@@ -112,9 +113,10 @@ exports.getCatOverviewSpend = (req, res) => {
                     previous = previous + parseInt(items[amounttype]);
                     commitedrating = parseInt(items['CommitedSS_rating']);
                     currentrating = parseInt(items['CurrentSS_rating']);
+                    comment = items['CommitedSS_Comment']
                 }
             }
-            processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:''});
+            processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:'', comment: comment});
         }
 
         for(var i=0; i<processvalue.length; i++) {
@@ -490,6 +492,26 @@ exports.getSpendByDept = (req, res) => {
         
     }
 
+    exports.postSScomment = (req,res) => {
+        console.log(req.body);
+        if(req.body.type == 'CommittedAmount_2019') {
+            CatModel.updateMany({ SupplierName: req.body.name }, { CommitedSS_Comment: req.body.comment }, (err, docs) => {
+                if (!err) {
+                    // console.log('if',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }else {
+            CatModel.updateMany({ SupplierName: req.body.name }, { CurrentSS_Comment: req.body.comment }, (err, docs) => {
+                if (!err) {
+                    // console.log('else',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }
+        
+    }
+
     exports.postSCrating = (req,res) => {
         // console.log(req.body);
         if(req.body.type == 'CommittedAmount_2019') {
@@ -501,6 +523,26 @@ exports.getSpendByDept = (req, res) => {
             });
         }else {
             CatModel.updateMany({ Category: req.body.name }, { CurrentSC_rating: req.body.rating }, (err, docs) => {
+                if (!err) {
+                    // console.log('else',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }
+        
+    }
+
+    exports.postSCcomment = (req,res) => {
+        // console.log(req.body);
+        if(req.body.type == 'CommittedAmount_2019') {
+            CatModel.updateMany({ Category: req.body.name }, { CommitedSC_Comment: req.body.comment }, (err, docs) => {
+                if (!err) {
+                    // console.log('if',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }else {
+            CatModel.updateMany({ Category: req.body.name }, { CurrentSC_Comment: req.body.comment }, (err, docs) => {
                 if (!err) {
                     // console.log('else',docs);
                     res.status(200).send('updated succesfully');
@@ -530,6 +572,26 @@ exports.getSpendByDept = (req, res) => {
         
     }
 
+    exports.postSDcomment = (req,res) => {
+        // console.log(req.body);
+        if(req.body.type == 'CommittedAmount_2019') {
+            CatModel.updateMany({ DeptBU: req.body.name }, { CommitedSD_Comment: req.body.comment }, (err, docs) => {
+                if (!err) {
+                    // console.log('if',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }else {
+            CatModel.updateMany({ DeptBU: req.body.name }, { CurrentSD_Comment: req.body.comment }, (err, docs) => {
+                if (!err) {
+                    // console.log('else',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }
+        
+    }
+
     exports.postCVrating = (req,res) => {
         console.log(req.body);
         if(req.body.type == 'CommittedAmount_2019') {
@@ -541,6 +603,26 @@ exports.getSpendByDept = (req, res) => {
             });
         }else if(req.body.type == 'CurrentAmount_2019') {
             CatModel.updateMany({ ContractName: req.body.name }, { CurrentCV_rating: req.body.rating }, (err, docs) => {
+                if (!err) {
+                    console.log('else',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }
+        
+    }
+
+    exports.postCVcomment = (req,res) => {
+        console.log(req.body);
+        if(req.body.type == 'CommittedAmount_2019') {
+            CatModel.updateMany({ ContractName: req.body.name }, { CommitedCV_Comment: req.body.comment }, (err, docs) => {
+                if (!err) {
+                    console.log('if',docs);
+                    res.status(200).send('updated succesfully');
+                }
+            });
+        }else if(req.body.type == 'CurrentAmount_2019') {
+            CatModel.updateMany({ ContractName: req.body.name }, { CurrentCV_Comment: req.body.comment }, (err, docs) => {
                 if (!err) {
                     console.log('else',docs);
                     res.status(200).send('updated succesfully');

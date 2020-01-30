@@ -22,12 +22,17 @@ router.get('/totalVendorsContracts', caterpillarController.totalVendorsContracts
 router.get('/digitalSavings', caterpillarController.digitalsavings);
 
 router.post('/postSSRating', caterpillarController.postSSrating);
+router.post('/postSScomment', caterpillarController.postSScomment);
+
 
 router.post('/postSCRating', caterpillarController.postSCrating);
+router.post('/postSCcomment', caterpillarController.postSCcomment);
 
 router.post('/postSDRating', caterpillarController.postSDrating);
+router.post('/postSDRcomment', caterpillarController.postSDcomment);
 
 router.post('/postCVRating', caterpillarController.postCVrating);
+router.post('/postCVcomment', caterpillarController.postCVcomment);
 
 router.post('/postCaterpillarOverview', caterpillarController.postCatOverview);
 
