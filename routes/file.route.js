@@ -141,7 +141,7 @@ function processExcel(exceltojson, req, res) {
             "CommitedSD_rating", "CurrentSD_rating", "CommitedSavings_rating", "CurrentSavings_rating", "CommitedCV_rating", "CurrentCV_rating", "Enterprises", 
             "CommitedSS_Comment","CurrentSS_Comment", "CommitedSC_Comment", "CurrentSC_Comment", "CommitedSD_Comment", 
             "CurrentSD_Comment", "CommitedSavings_Comment", "CurrentSavings_Comment", "CommitedCV_Comment",
-            "CurrentCV_Comment"];
+            "CurrentCV_Comment", "date"];
         var refArray = [{ excelkey: "Enterprise_Spend", newKey: "Enterprise_Spend" },
         { excelkey: "ContractID", newKey: "ContractID" },
         { excelkey: "ContractName", newKey: "ContractName" },
@@ -177,6 +177,7 @@ function processExcel(exceltojson, req, res) {
         { excelkey: "CurrentSavings_Comment", newKey: "CurrentSavings_Comment" },
         { excelkey: "CommitedCV_Comment", newKey: "CommitedCV_Comment" },
         { excelkey: "CurrentCV_Comment", newKey: "CurrentCV_Comment" },
+        { excelkey: "date", newKey: "date" }
         ]
         var obj = newkeys.reduce(function (o, val) { o[val] = null; return o; }, {});
         var final = [];

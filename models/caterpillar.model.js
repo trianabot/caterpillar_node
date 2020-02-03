@@ -124,6 +124,9 @@ let caterpillarModel = new Schema({
     },
     CurrentCV_Comment: {
         type: String
+    },
+    date: {
+        type: String
     }
 });
 
