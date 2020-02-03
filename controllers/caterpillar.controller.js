@@ -147,16 +147,46 @@ exports.getCatOverviewSpend = (req, res) => {
                     return a;
                 }, []);
                 var category = processdata(docs, categories, type);
-                category = category.sort((a, b) => b.y - a.y);
-                // const spendcategory = spendCategory(category, docs, type);
-                // let intersection = docs.filter(x => !category.includes(x));
-                res.status(200).send({ data: category.slice(0,10), categories: categories.slice(0,10)});
+                // console.log(category.length);
+                
+                var spendcategory = spendCategory(category, type);
+                let intersection = category.filter(x => !spendcategory.includes(x));
+                // console.log('intersection', intersection);
+                var othery = 0;
+                var otherprevious = 0;
+                var othercommitedrating = 0;
+                var othercurrentrating  = 0;
+                var othercolor;
+
+                for(let item of intersection) {
+
+                     othery = othery +  parseInt(item['y']);
+                     otherprevious = otherprevious + parseInt(item['previous']);
+                     othercommitedrating = parseInt(item['commitedrating']);
+                     othercurrentrating = parseInt(item['currentrating']);
+                     othercolor = item['color'];
+
+                }
+                spendcategory.push({name: 'Others', y: othery,previous: otherprevious, commitedrating: othercommitedrating, currentrating: othercurrentrating, color:othercolor});
+                spendcategory = spendcategory.sort((a, b) => b.y - a.y);
+
+                var items = [];
+                for(let item of spendcategory) {
+                    items.push(item['name']);
+                }
+
+                res.status(200).send({ data: spendcategory, categories: items});
             } else {
                 return next(err);
                 // res.send({message:err});
             }
 
         });
+        function spendCategory(supp, type) {
+            supp.sort((a, b) => b.y - a.y);
+            supp = supp.slice(0, 10);
+            return supp;
+        }
         function processdata(docs, supp, type) {
             var processvalue = [];
             var colorcodes = ['#7cc0f7', '#ff4b4c', '#070fb0', '#1769a3', '#1aa8a9', '#ffac4e', '#03cb44', '#ff6b1b', '#a42cee', '#ff4d6f'];
@@ -207,15 +237,39 @@ exports.getSpendByDept = (req, res) => {
                 return a;
             }, []);
             var deptbu = processdata(docs, deptBu, type);
-            deptbu = deptbu.sort((a, b) => b.y - a.y)
-            // let intersection = docs.filter(x => !category.includes(x));
-            res.status(200).send({ data: deptbu.slice(0,10), dept: deptBu});
+            var process = spendDepbu(deptbu, type);
+            let intersection = deptbu.filter(x => !process.includes(x));
+            var othervalue = 0;
+            var othercommitedrating = 0;
+            var otherprevious = 0;
+            var othercurrentrating = 0;
+            var othercolor;
+            for(let item of intersection) {
+                 othervalue = othervalue + parseInt(item['y']);
+                 othercommitedrating = parseInt(item['commitedrating']);
+                 othercurrentrating = parseInt(item['currentrating']);
+                 otherprevious = otherprevious + parseInt(item['previous']);
+                 othercolor = item['color'];
+            }
+            process.push({name: 'Others', y: othervalue, previous: otherprevious, commitedrating: othercommitedrating, currentrating: othercurrentrating, color:othercolor})
+            process = process.sort((a, b) => b.y - a.y);
+            var dbs = [];
+            for(let item of process) {
+                dbs.push(item['name'])
+            }
+            res.status(200).send({ data: process, dept: dbs});
         } else {
             return next(err);
             // res.send({message:err});
         }
 
     });
+
+    function spendDepbu(supp, type) {
+        supp.sort((a, b) => b.y - a.y);
+        supp = supp.slice(0, 10);
+        return supp;
+    }
     function processdata(docs, supp, type) {
         var processvalue = [];
         var colorcodes = ['#7cc0f7', '#ff4b4c', '#070fb0', '#1769a3', '#1aa8a9', '#ffac4e', '#03cb44', '#ff6b1b', '#a42cee', '#ff4d6f'];
