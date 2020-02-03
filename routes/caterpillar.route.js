@@ -55,4 +55,8 @@ router.get('/getdeptbufilters', caterpillarController.getDeptfilters);
 
 router.get('/getbydeptbu', caterpillarController.getbyDeptBuInfo);
 
+///allinfo
+
+router.post('/getallinfo', caterpillarController.getallinfo);
+
 module.exports = router;

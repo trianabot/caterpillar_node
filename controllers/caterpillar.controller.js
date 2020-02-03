@@ -516,8 +516,8 @@ exports.getSpendByDept = (req, res) => {
                     goal.push(150000);
                     actual.push(parseInt(item['CurrentAmount_2019']));
                 }
-                goal = goal.slice(0,100);
-                actual = actual.slice(0, 100);
+                // goal = goal.slice(0,100);
+                // actual = actual.slice(0, 100);
                 res.status(200).send({goal: goal, actual: actual});
             }else {
                 return next(err);
@@ -1049,4 +1049,47 @@ exports.testmodal = (req, res, next) => {
         res.status(200).send(final);
         
         });
+}
+
+exports.getallinfo = (req,res) => {
+    var type = req.body.type;
+    var commitedamounttype = req.body.commitedamounttype;
+    var currentamounttype = req.body.currentamounttype;
+    var all = [];
+    CatModel.find({}, (err, docs) => {
+        if(!err) {
+            all = docs.reduce(function(a, d) {
+                if (a.indexOf(d[type]) === -1) {
+                    a.push(d[type]);
+                }
+                return a;
+            }, []);
+            // res.status(200).send({msg: all});
+            const data = processdata(all,docs, type);
+            res.status(200).send(data);
+        }else {
+            res.status(400).send({msg: 'Something Went Wrong'});
+        }
+    });
+
+    function processdata(all, docs, type) {
+        var records = [];
+        var y;
+        var previous;
+        for (let item of all) {
+            y = 0;
+            previous = 0;
+            for(let items of docs) {
+                 
+                 if(item == items[type]) {
+                    
+                      y = y + parseInt(items[commitedamounttype]);
+                      previous = previous + parseInt(items[currentamounttype]);
+                 }
+            }
+            records.push({name: item, y: y, previous: previous});
+        }
+        return records;
+    }
+
 }
