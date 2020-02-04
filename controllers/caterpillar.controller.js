@@ -13,6 +13,8 @@ const passport = require('passport');
 
 const CatModel = require('../models/caterpillar.model');
 
+var moment = require('moment'); 
+
 exports.testuser = (req, res) => {
     res.send('this is test cat data');
 }
@@ -512,18 +514,145 @@ exports.getSpendByDept = (req, res) => {
             if (!err) {
                 var goal = [];
                 var actual = [];
+                const filterMonth = processMonth(docs);
+                const filterQuaterly = processQuaterly(docs);
+                const yearly = processYearly(docs);
+                const weekly = processWeekly(docs);
                 for(let item of docs) {
+                    // console.log(moment(item['date'], "MM-DD-YYYY").format('MMM YYYY'));
                     goal.push(150000);
                     actual.push(parseInt(item['CurrentAmount_2019']));
                 }
                 // goal = goal.slice(0,100);
                 // actual = actual.slice(0, 100);
-                res.status(200).send({goal: goal, actual: actual});
+                res.status(200).send({goal: goal, actual: actual, monthrecords: filterMonth, quater: filterQuaterly, yearly: yearly, weekly: weekly});
             }else {
                 return next(err);
                 // res.send({message:err});
             }
         });
+
+
+        function processMonth(docs) {
+            var Months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            var monthrecords = [];
+            var count;
+            var goal;
+            for(let item of Months) {
+                count = 0;
+                goal = 0;
+                for(let items of docs) {
+                    // console.log(moment(items['date'], "MM-DD-YYYY").format('MMM'));
+                    if(item == moment(items['date'], "MM-DD-YYYY").format('MMM')) {
+                        count = count + parseInt(items['CurrentAmount_2019']);
+                        goal = 1930000;
+                    }
+                }
+                monthrecords.push({month: item, actual: count, goal: goal});
+            }
+            return monthrecords;
+        }
+
+        function processQuaterly(docs) {
+            var Months = ['Jan-Mar', 'Apr-Jun', 'Jul-Sep', 'Oct-Dec'];
+            var monthquater = [];
+            var q1 = 0;
+            var q2 = 0;
+            var q3 = 0;
+            var q4 = 0;
+            var goal;
+            // for(let item in Months) {
+            //     q1 = 0;
+            //     goal = 0;
+                for(let items in docs) {
+                    if(moment(docs[items]['date'], "MM-DD-YYYY").format('M') < 4) {
+                        q1 = q1 + parseInt(docs[items]['CurrentAmount_2019']);
+                        goal = 7000000;
+                    }
+                }
+                for(let items in docs) {
+                    if(moment(docs[items]['date'], "MM-DD-YYYY").format('M') > 3 && moment(docs[items]['date'], "MM-DD-YYYY").format('M') < 7) {
+                        q2 = q2 + parseInt(docs[items]['CurrentAmount_2019']);
+                        goal = 7000000;
+                    }
+                }
+                for(let items in docs) {
+                    if(moment(docs[items]['date'], "MM-DD-YYYY").format('M') > 6 && moment(docs[items]['date'], "MM-DD-YYYY").format('M') < 10) {
+                        q3 = q3 + parseInt(docs[items]['CurrentAmount_2019']);
+                        goal = 7000000;
+                    }
+                }
+                for(let items in docs) {
+                    if(moment(docs[items]['date'], "MM-DD-YYYY").format('M') > 9 && moment(docs[items]['date'], "MM-DD-YYYY").format('M') < 13) {
+                        q4 = q4 + parseInt(docs[items]['CurrentAmount_2019']);
+                        goal = 7000000;
+                    }
+                }
+                monthquater.push({month: Months[0], actual: q1, goal: goal});
+                monthquater.push({month: Months[1], actual: q2, goal: goal});
+                monthquater.push({month: Months[2], actual: q3, goal: goal});
+                monthquater.push({month: Months[3], actual: q4, goal: goal});
+            // }
+            return monthquater;
+        }
+
+        function processYearly(docs) {
+            var years = ['2019', '2020'];
+            var year2019 = 0;
+            var year2020 = 0;
+            var records = [];
+            var goal;
+            for(let items in docs) {
+                if(moment(docs[items]['date'], "MM-DD-YYYY").format('Y') == 2019) {
+                    year2019 = year2019 + parseInt(docs[items]['CurrentAmount_2019']);
+                    goal = 22000000;
+                }else if(moment(docs[items]['date'], "MM-DD-YYYY").format('Y') == 2020) {
+                    year2020 = year2020 + parseInt(docs[items]['CurrentAmount_2019']);
+                    goal = 22000000;
+                }
+            }
+            records.push({month: years[0], actual: year2019, goal:goal});
+            records.push({month: years[1], actual: year2020, goal:goal});
+
+            return records;
+        }
+
+        function processWeekly(docs) {
+            var weeks = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            var records = [];
+            var goal;
+            var actual;
+            var finalrecords = [];
+            var records = docs.filter(x => moment(x['date'], "MM-DD-YYYY").format('Y') == 2020 && moment(x['date'], "MM-DD-YYYY").format('M')== 2);
+            var currentDate = moment();
+
+            var weekStart = currentDate.clone().startOf('isoWeek');
+            var weekEnd = currentDate.clone().endOf('isoWeek');
+          
+            var days = [];
+            var total = moment('02/03/2020', "MM-DD-YYYY").format('d');
+            console.log(total);
+          
+            for (var i = 0; i <= total; i++) {
+              days.push(moment(weekStart).add(i, 'days').format("dddd"));
+            }
+            console.log(days);
+            for(let item of days) {
+                
+                actual = 0;
+                for(let items of records) {
+                    // console.log(item);
+                    // console.log(moment(items['date'], "MM-DD-YYYY").format('dddd'));
+                    if(item == moment(items['date'], "MM-DD-YYYY").format('dddd')) {
+                       actual = actual + parseInt(items['CurrentAmount_2019']);
+                       goal = 260000;
+                    }
+                }
+                finalrecords.push({month: item, actual: actual, goal})
+            }
+
+            return finalrecords;
+        }
     }
 
     exports.postSSrating = (req,res) => {
