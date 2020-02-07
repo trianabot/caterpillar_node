@@ -196,6 +196,7 @@ exports.getCatOverviewSpend = (req, res) => {
             var previous = 0;
             var commitedrating;
             var currentrating;
+            var comment;
             for(let item of supp) {
                 value = 0;
                 previous = 0;
@@ -207,9 +208,10 @@ exports.getCatOverviewSpend = (req, res) => {
                         previous = previous + parseInt(items[amounttype]);
                         commitedrating = parseInt(items['CommitedSC_rating']);
                         currentrating = parseInt(items['CurrentSC_rating']);
+                        comment = items['CurrentSC_Comment']
                     }
                 }
-                processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:''});
+                processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:'', comment: comment});
             }
             for(var i=0; i<processvalue.length; i++) {
                 for(var j=0; j<colorcodes.length; j++) {
@@ -279,6 +281,7 @@ exports.getSpendByDept = (req, res) => {
         var previous = 0;
         var commitedrating;
         var currentrating;
+        var comment;
         for(let item of supp) {
             value = 0;
             previous = 0;
@@ -288,6 +291,7 @@ exports.getSpendByDept = (req, res) => {
                     previous = previous + parseInt(items[amounttype]);
                     commitedrating = parseInt(items['CommitedSD_rating']);
                     currentrating = parseInt(items['CurrentSD_rating']);
+                    comment = items['CurrentSD_Comment'];
                 }
             }
             processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:''});
@@ -1182,9 +1186,33 @@ exports.testmodal = (req, res, next) => {
 
 exports.getallinfo = (req,res) => {
     var type = req.body.type;
-    var commitedamounttype = req.body.commitedamounttype;
-    var currentamounttype = req.body.currentamounttype;
+    var cmm = req.body.commitedamounttype;
+    var cm = req.body.currentamounttype
+    var commitedamounttype;
+    var currentamounttype;
     var all = [];
+    var incomingcomment;
+    var incomingcommittedrating;
+    var incomingcurrentrating;
+    if(cmm == "CommittedAmount_2019") {
+        commitedamounttype = 'CommittedAmount_2018';
+    }
+    else if(cmm == "CurrentAmount_2019") {
+        currentamounttype = 'CurrentAmount_2018'
+    }
+    if(type =="Category") {
+        incomingcomment = 'CommitedSC_Comment';
+        incomingcommittedrating = 'CommitedSC_rating';
+        incomingcurrentrating = 'CurrentSC_rating';
+    }else if(type == "SupplierName") {
+        incomingcomment = 'CommitedSS_Comment';
+        incomingcommittedrating = 'CommitedSS_rating';
+        incomingcurrentrating = 'CurrentSC_rating';
+    }else if(type == "DeptBU") {
+        incomingcomment = 'CommitedSD_Comment';
+        incomingcommittedrating = 'CommitedSD_rating';
+        incomingcurrentrating = 'CurrentSC_rating';
+    }
     CatModel.find({}, (err, docs) => {
         if(!err) {
             all = docs.reduce(function(a, d) {
@@ -1205,6 +1233,9 @@ exports.getallinfo = (req,res) => {
         var records = [];
         var y;
         var previous;
+        var comment;
+        var commitedrating;
+        var currentrating;
         for (let item of all) {
             y = 0;
             previous = 0;
@@ -1212,11 +1243,14 @@ exports.getallinfo = (req,res) => {
                  
                  if(item == items[type]) {
                     
-                      y = y + parseInt(items[commitedamounttype]);
-                      previous = previous + parseInt(items[currentamounttype]);
+                      y = y + parseInt(items[cmm]);
+                      previous = previous + parseInt(items[commitedamounttype]);
+                      currentrating = items[incomingcurrentrating];
+                      comment = items[incomingcomment];
+                      commitedrating = items[incomingcommittedrating];
                  }
             }
-            records.push({name: item, y: y, previous: previous});
+            records.push({name: item, y: y, previous: previous, commitedrating: commitedrating, currentrating: currentrating, comment: comment});
         }
         return records;
     }
