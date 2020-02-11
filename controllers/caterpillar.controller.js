@@ -63,7 +63,7 @@ exports.getCatOverviewSpend = (req, res) => {
             var othercurrentrating;
             var othercolor;
             for (let item of intersection) {
-                othercount = othercount + parseInt(item['y']);
+                othercount = othercount + parseInt(item['value']);
                 otherprevious = otherprevious + parseInt(item['previous']);
                 othercommitedrating = parseInt(item['commitedrating']);
                 othercurrentrating = parseInt(item['currentrating']);
@@ -118,7 +118,7 @@ exports.getCatOverviewSpend = (req, res) => {
                     comment = items['CommitedSS_Comment']
                 }
             }
-            processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:'', comment: comment});
+            processvalue.push({name: item, value: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:'', comment: comment});
         }
 
         for(var i=0; i<processvalue.length; i++) {
@@ -162,14 +162,14 @@ exports.getCatOverviewSpend = (req, res) => {
 
                 for(let item of intersection) {
 
-                     othery = othery +  parseInt(item['y']);
+                     othery = othery +  parseInt(item['value']);
                      otherprevious = otherprevious + parseInt(item['previous']);
                      othercommitedrating = parseInt(item['commitedrating']);
                      othercurrentrating = parseInt(item['currentrating']);
                      othercolor = item['color'];
 
                 }
-                spendcategory.push({name: 'Others', y: othery,previous: otherprevious, commitedrating: othercommitedrating, currentrating: othercurrentrating, color:othercolor});
+                spendcategory.push({name: 'Others', value: othery,previous: otherprevious, commitedrating: othercommitedrating, currentrating: othercurrentrating, color:othercolor});
                 spendcategory = spendcategory.sort((a, b) => b.y - a.y);
 
                 var items = [];
@@ -211,7 +211,7 @@ exports.getCatOverviewSpend = (req, res) => {
                         comment = items['CurrentSC_Comment']
                     }
                 }
-                processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:'', comment: comment});
+                processvalue.push({name: item, value: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:'', comment: comment});
             }
             for(var i=0; i<processvalue.length; i++) {
                 for(var j=0; j<colorcodes.length; j++) {
@@ -249,13 +249,13 @@ exports.getSpendByDept = (req, res) => {
             var othercurrentrating = 0;
             var othercolor;
             for(let item of intersection) {
-                 othervalue = othervalue + parseInt(item['y']);
+                 othervalue = othervalue + parseInt(item['value']);
                  othercommitedrating = parseInt(item['commitedrating']);
                  othercurrentrating = parseInt(item['currentrating']);
                  otherprevious = otherprevious + parseInt(item['previous']);
                  othercolor = item['color'];
             }
-            process.push({name: 'Others', y: othervalue, previous: otherprevious, commitedrating: othercommitedrating, currentrating: othercurrentrating, color:othercolor})
+            process.push({name: 'Others', value: othervalue, previous: otherprevious, commitedrating: othercommitedrating, currentrating: othercurrentrating, color:othercolor})
             process = process.sort((a, b) => b.y - a.y);
             var dbs = [];
             for(let item of process) {
@@ -294,7 +294,7 @@ exports.getSpendByDept = (req, res) => {
                     comment = items['CurrentSD_Comment'];
                 }
             }
-            processvalue.push({name: item, y: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:''});
+            processvalue.push({name: item, value: value, previous: previous, commitedrating: commitedrating, currentrating: currentrating, color:''});
         }
         for(var i=0; i<processvalue.length; i++) {
             for(var j=0; j<colorcodes.length; j++) {
