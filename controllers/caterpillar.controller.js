@@ -373,7 +373,7 @@ exports.getSpendByDept = (req, res) => {
                      }
                  }
                  savings = spend2019 - spend2018;
-                 suppliersaving.push({name: item, y: savings, color:'', tablecolor: ''});
+                 suppliersaving.push({name: item, y: savings, color:'', tablecolor: '',previous :'0' });
              }
 
              for(var i=0; i<suppliersaving.length; i++) {
