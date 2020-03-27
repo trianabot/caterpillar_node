@@ -9,12 +9,15 @@ var path = require('path');
 
 
 
+
 // Set up mongoose connection
 const mongoose = require('mongoose');
 
-let dev_db_url = 'mongodb://caterpillar:caterpillar123@ds215502.mlab.com:15502/kalyantds';
+// let dev_db_url = 'mongodb://caterpillar:caterpillar123@ds215502.mlab.com:15502/kalyantds';
+let dev_db_url = 'mongodb://caterpillar:cat123@ds223812.mlab.com:23812/caterpillar'
 let mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB, { useNewUrlParser: true });
+// mongoose.connect('mongodb://localhost/CAT', { useNewUrlParser: true, useUnifiedTopology: true });
 mongoose.Promise = global.Promise;
 let db = mongoose.connection;
 db.on('error', console.error.bind(console, 'MongoDB connection error:'));
@@ -53,6 +56,7 @@ app.use(allowCrossDomain);
 const userinfo = require('./routes/user.route');
 const fileuploadInfo =  require('./routes/file.route');
 const caterpillar = require('./routes/caterpillar.route');
+const qualityRoute = require('./routes/quality.router');
 
 
 app.use(bodyParser.json());
@@ -62,6 +66,7 @@ app.use(bodyParser.urlencoded({extended: false}));
 app.use('/user',userinfo);
 app.use('/file',fileuploadInfo);
 app.use('/caterpillar', caterpillar);
+app.use('/project', qualityRoute);
 
 // Use the passport package in our application
 app.use(passport.initialize());
