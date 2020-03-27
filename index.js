@@ -13,8 +13,8 @@ var path = require('path');
 // Set up mongoose connection
 const mongoose = require('mongoose');
 
-// let dev_db_url = 'mongodb://caterpillar:caterpillar123@ds215502.mlab.com:15502/kalyantds';
-let dev_db_url = 'mongodb://caterpillar:cat123@ds223812.mlab.com:23812/caterpillar'
+let dev_db_url = 'mongodb://caterpillar:caterpillar123@ds215502.mlab.com:15502/kalyantds';
+// let dev_db_url = 'mongodb://caterpillar:cat123@ds223812.mlab.com:23812/caterpillar'
 let mongoDB = process.env.MONGODB_URI || dev_db_url;
 mongoose.connect(mongoDB, { useNewUrlParser: true });
 // mongoose.connect('mongodb://localhost/CAT', { useNewUrlParser: true, useUnifiedTopology: true });
