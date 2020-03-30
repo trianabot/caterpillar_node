@@ -115,9 +115,7 @@ module.exports.updateProjectRating = (req, resp, next) => {
 };
 module.exports.getProjectById = (req, resp, next) => {
     const _id = req.params.id;
-    console.log("id", _id);
     QualityModel.findById(_id).then(project => {
-        console.log(project);
         resp.status(200).json({
             status: 200,
             message: 'data found successfully',
