@@ -10,7 +10,7 @@ module.exports.createProject = (req, resp, next) => {
             await resp.status(200).json({
                 status: 200,
                 message: 'Project created successfully',
-                insetCount:project.insertedCount,
+                insetCount: project.insertedCount,
                 data: project.ops
             });
         } else {
@@ -52,37 +52,37 @@ module.exports.getAllProjects = (req, resp, next) => {
     });
 };
 
-module.exports.updateProject = (req, resp, next)=>{
+module.exports.updateProject = (req, resp, next) => {
     let id = req.body._id;
     let addingRate = req.body.addRating;
-    QualityModel.updateOne({_id:id}, {$push:{addRating:addingRate}})
-    .then(project=>{
-        if(project){
-            resp.status(200).json({
-                status: 200,
-                message: 'data updated successfully'
+    QualityModel.updateOne({ _id: id }, { $push: { addRating: addingRate } })
+        .then(project => {
+            if (project) {
+                resp.status(200).json({
+                    status: 200,
+                    message: 'data updated successfully'
+                });
+            }
+        }).catch(err => {
+            console.log(err);
+            resp.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: err
             });
-        }
-    }).catch(err=>{
-        console.log(err);
-        resp.status(500).json({
-            status: 500,
-            message: 'Internal server error',
-            error: err
         });
-    });
 };
 
-module.exports.deleteProject = (req, resp, next)=>{
+module.exports.deleteProject = (req, resp, next) => {
     let id = req.params.id;
-    QualityModel.deleteOne({_id:id}).then(project=>{
-        if(project){
+    QualityModel.deleteOne({ _id: id }).then(project => {
+        if (project) {
             resp.status(200).json({
                 status: 200,
                 message: 'deleted successfully'
             });
         }
-    }).catch(err=>{
+    }).catch(err => {
         console.log(err);
         resp.status(500).json({
             status: 500,
@@ -92,20 +92,38 @@ module.exports.deleteProject = (req, resp, next)=>{
     });
 };
 
-module.exports.updateProjectRating = (req, resp, next)=>{
+module.exports.updateProjectRating = (req, resp, next) => {
     let weightage = req.body.weightage;
     let rating = req.body.rating;
     let id = req.body._id;
 
-    QualityModel.updateOne({_id:id}, {$set:{weightage:weightage, rating:rating}})
-    .then(project=>{
+    QualityModel.updateOne({ _id: id }, { $set: { weightage: weightage, rating: rating } })
+        .then(project => {
+            resp.status(200).json({
+                status: 200,
+                message: 'updated successfully'
+            });
+        })
+        .catch(err => {
+            console.log(err);
+            resp.status(500).json({
+                status: 500,
+                message: 'Internal server error',
+                error: err
+            });
+        });
+};
+module.exports.getProjectById = (req, resp, next) => {
+    const _id = req.params.id;
+    console.log("id", _id);
+    QualityModel.findById(_id).then(project => {
+        console.log(project);
         resp.status(200).json({
             status: 200,
-            message: 'updated successfully'
+            message: 'data found successfully',
+            data: project
         });
-    })
-    .catch(err=>{
-        console.log(err);
+    }).catch(err => {
         resp.status(500).json({
             status: 500,
             message: 'Internal server error',

@@ -12,6 +12,7 @@ rout.get('/getall', qualityControler.getAllProjects);
 rout.put('/updateproject', qualityControler.updateProject);
 rout.put('/updaterating', qualityControler.updateProjectRating);
 rout.delete('/delete/:id', qualityControler.deleteProject);
+rout.get('/:id', qualityControler.getProjectById);
 
 
 module.exports = rout;
