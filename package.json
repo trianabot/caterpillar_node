@@ -18,7 +18,7 @@
     "express-session": "^1.15.6",
     "fast-csv": "^2.4.1",
     "json2csv": "^4.3.3",
-    "jsonwebtoken": "^8.4.0",
+    "jsonwebtoken": "^9.0.0",
     "moment": "^2.24.0",
     "mongoose": "^5.8.1",
     "mongoose-unique-validator": "^2.0.2",
